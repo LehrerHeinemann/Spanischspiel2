@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El catalán en España - Texto con espacios en blanco</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .draggable {
+            display: inline-block;
+            padding: 5px;
+            margin: 5px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: move;
+        }
+        .droppable {
+            display: inline-block;
+            width: 100px;
+            height: 20px;
+            border-bottom: 1px solid black;
+            margin: 0 5px;
+        }
+        #wordBank {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h1>El catalán en España - Texto con espacios en blanco</h1>
+    
+    <div id="text">
+        El catalán es una importante <span class="droppable" data-word="lengua"></span> en España. En Cataluña, es la <span class="droppable" data-word="lengua oficial"></span>, junto con el castellano. Muchos estudiantes extranjeros vienen con una <span class="droppable" data-word="beca"></span> Erasmus a Barcelona para estudiar. España se compone de 17 <span class="droppable" data-word="comunidades autónomas"></span>.
+
+        En las <span class="droppable" data-word="escuelas"></span> de Cataluña, se enseña en catalán. El <span class="droppable" data-word="dominio lingüístico"></span> del catalán abarca varios territorios, incluyendo las Islas Baleares. Curiosamente, el catalán tiene más <span class="droppable" data-word="hablantes"></span> que el danés o el finés.
+
+        Durante la <span class="droppable" data-word="dictadura"></span> de Franco, Cataluña perdió su estatuto de autonomía, y el uso del catalán fue <span class="droppable" data-word="oprimido"></span>. La <span class="droppable" data-word="persecución"></span> del catalán fue intensa y sistemática en ese período. Bajo Franco, se <span class="droppable" data-word="prohibieron"></span> libros, revistas y conversaciones telefónicas en catalán.
+
+        Hoy en día, Cataluña es una de las regiones más <span class="droppable" data-word="prósperas"></span> de España. La región es <span class="droppable" data-word="bilingüe"></span>, hablándose tanto catalán como castellano. El ministro de educación enfatiza la importancia del <span class="droppable" data-word="pluralismo lingüístico"></span> y declara que España y Canadá tienen la responsabilidad de mostrar al mundo las ventajas de la diversidad lingüística.
+    </div>
+
+    <div id="wordBank"></div>
+
+    <button onclick="checkAnswers()">Mostrar solución</button>
+
+    <script>
+        const words = [
+            "lengua", "lengua oficial", "beca", "comunidades autónomas", "escuelas",
+            "dominio lingüístico", "hablantes", "dictadura", "oprimido", "persecución",
+            "prohibieron", "prósperas", "bilingüe", "pluralismo lingüístico"
+        ];
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function initializeDragAndDrop() {
+            shuffleArray(words);
+            const wordBank = document.getElementById("wordBank");
+            words.forEach(word => {
+                const span = document.createElement("span");
+                span.className = "draggable";
+                span.draggable = true;
+                span.textContent = word;
+                wordBank.appendChild(span);
+            });
+
+            const draggables = document.querySelectorAll(".draggable");
+            const droppables = document.querySelectorAll(".droppable");
+
+            draggables.forEach(draggable => {
+                draggable.addEventListener("dragstart", dragStart);
+            });
+
+            droppables.forEach(droppable => {
+                droppable.addEventListener("dragover", dragOver);
+                droppable.addEventListener("drop", drop);
+            });
+        }
+
+        function dragStart(e) {
+            e.dataTransfer.setData("text/plain", e.target.textContent);
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function drop(e) {
+            e.preventDefault();
+            const word = e.dataTransfer.getData("text");
+            e.target.textContent = word;
+            e.target.classList.add("filled");
+            document.querySelector(`.draggable:not(.used):contains('${word}')`).classList.add("used");
+        }
+
+        function checkAnswers() {
+            const droppables = document.querySelectorAll(".droppable");
+            droppables.forEach(droppable => {
+                if (droppable.textContent === droppable.dataset.word) {
+                    droppable.style.color = "green";
+                } else {
+                    droppable.style.color = "red";
+                    droppable.textContent = droppable.dataset.word;
+                }
+            });
+        }
+
+        initializeDragAndDrop();
+    </script>
+</body>
+</html>
